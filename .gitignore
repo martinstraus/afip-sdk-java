@@ -1,0 +1,5 @@
+/.nb-gradle/
+/build/
+/.gradle/
+/src/certificados/
+/src/test/soapui/
