@@ -31,3 +31,31 @@ El token sirve como máximo durante 24 horas.
 
 Para factura electrónica, se tiene que autorizar al certificado en cada servicio particular. Todos los web services
 esperan un elemento XML con la información de autorización: token, sign, y el CUIT sobre el que se va a operar.
+
+## Uso del SDK
+
+### Autenticación
+
+La autenticación se realiza con la clase ```AutenticacionEndpoint```. La clase
+debe encriptar el ticket de solicitud, para lo que usa una implementación de
+```EncriptadorCMS```. ```EncriptadorCMS```, a su vez, necesita que exista el 
+archivo _keystore_ (generado con los pasos mencionados anteriormente).
+```AutenticacionEndpoint``` tiene dos extensiones de conveniencia, que ya 
+incluyen las URLs del WSAA para homologación y producción:
+* ```afip.sdk.homologacion.Autenticacion```
+* ```afip.sdk.produccion.Autenticacion```
+
+Si el archivo de _keystore_ es ```keystore.pfx```, entonces:
+
+```
+java.io.File keystore = new java.io.File("/ruta/al/archivo/keystore.pfx");
+EncriptadorCMS encriptador = new EncriptadorCMS(
+    new java.io.FileInputStream(keystore),
+    "claveDelKeystore".toCharArray(),
+    "1" // Este es el identificador del signer en el keystore
+);
+Autenticacion autenticacion = new afip.sdk.homologacion.Autenticacion(encriptador);
+Credenciales credenciales = autenticacion.autenticar(Servicios.FACTURACION_ELECTRONICA);
+```
+
+Luego, el sign y el token se usan en cada web service.
