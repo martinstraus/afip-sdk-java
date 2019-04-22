@@ -31,3 +31,6 @@ El token sirve como máximo durante 24 horas.
 
 Para factura electrónica, se tiene que autorizar al certificado en cada servicio particular. Todos los web services
 esperan un elemento XML con la información de autorización: token, sign, y el CUIT sobre el que se va a operar.
+
+## Ejemplos
+

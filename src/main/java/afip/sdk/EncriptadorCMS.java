@@ -23,6 +23,8 @@
  */
 package afip.sdk;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
@@ -39,6 +41,8 @@ import java.security.cert.CertificateException;
 import java.security.cert.CollectionCertStoreParameters;
 import java.security.cert.X509Certificate;
 import static java.util.Arrays.asList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.cms.CMSProcessableByteArray;
 import org.bouncycastle.cms.CMSSignedData;
@@ -47,15 +51,27 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 /**
  * Basado en este ejemplo: http://www.afip.gob.ar/ws/WSAA/ejemplos/wsaa_client_java.tgz
+ *
  * @author Martín Straus <martin.straus@fit.com.ar>
  */
 public class EncriptadorCMS {
+
+    private static final Logger LOG = Logger.getLogger(EncriptadorCMS.class.getName());
 
     private static KeyStore keyStore(InputStream inputStream, char[] password) throws KeyStoreException, IOException,
         NoSuchAlgorithmException, CertificateException {
         final KeyStore keyStore = KeyStore.getInstance("pkcs12");
         keyStore.load(inputStream, password);
         return keyStore;
+    }
+
+    public static EncriptadorCMS desdeArchivo(File archivo, char[] password, String signer) throws KeyStoreException {
+        try (FileInputStream stream = new FileInputStream("/etc/ventapp/ventapp-pkcs12.pfx")) {
+            return new EncriptadorCMS(stream, password, signer);
+        } catch (KeyStoreException | IOException | NoSuchAlgorithmException | CertificateException ex) {
+            LOG.log(Level.SEVERE, "Error autenticando en AFIP", ex);
+            throw new RuntimeException(ex);
+        }
     }
 
     private final KeyStore keyStore;
